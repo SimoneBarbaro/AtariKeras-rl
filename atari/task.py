@@ -132,7 +132,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     args = args.__dict__
 
-    output_dir = args["output_dir"]
+    output_dir = os.path.join(args["output_dir"], args["env_name"], args["run_id"])
     checkpoint_path = os.path.join(output_dir, "checkpoint")
     monitor_path = os.path.join(output_dir, "monitor")
 
