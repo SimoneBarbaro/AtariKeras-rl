@@ -91,7 +91,7 @@ def train_and_evaluate(args, monitor_path, checkpoint_step_filename,
                                                step_path=checkpoint_step_filename,
                                                interval=args["checkpoint_frequency"],
                                                starting_step=starting_step),
-                 MyTrainLogger(args["checkpoint_frequency"], starting_step, log_filename)]
+                 MyTrainLogger(args["checkpoint_frequency"], args["training_steps"], starting_step, log_filename)]
 
     dqn.fit(env, callbacks=callbacks, verbose=0,
             nb_steps=args["training_steps"] - starting_step,
