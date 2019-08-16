@@ -31,10 +31,6 @@ class MyTrainLogger(Callback):
         print('done, took {:.3f} seconds'.format(duration))
 
     def on_step_begin(self, step, logs):
-        print(self.step)
-        print(type(self.step))
-        print(self.interval)
-        print(type(self.interval))
         if self.step % self.interval == 0:
             if len(self.episode_rewards) > 0:
                 print('\n{} episodes - reward statistics: {:.3f} [{:.3f}, {:.3f}]\n'.format(len(self.episode_rewards), np.mean(self.episode_rewards), np.min(self.episode_rewards), np.max(self.episode_rewards)))
