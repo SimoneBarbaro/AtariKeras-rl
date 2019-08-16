@@ -93,11 +93,14 @@ def train_and_evaluate(args, monitor_path, checkpoint_step_filename,
                                                starting_step=starting_step),
                  MyTrainLogger(args["checkpoint_frequency"], args["training_steps"], starting_step, log_filename)]
 
-    dqn.fit(env, callbacks=callbacks, verbose=0,
-            nb_steps=args["training_steps"] - starting_step,
-            nb_max_start_steps=args["strarting_fire_steps"], start_step_policy=lambda obs: 1)  # 1 is fire action
+    if args["mode"] == "Train":
+        dqn.fit(env, callbacks=callbacks, verbose=0,
+                nb_steps=args["training_steps"] - starting_step,
+                nb_max_start_steps=args["strarting_fire_steps"], start_step_policy=lambda obs: 1)  # 1 is fire action
 
-    dqn.save_weights(weights_filename, overwrite=True)
+        dqn.save_weights(weights_filename, overwrite=True)
+    else:
+        dqn.load_weights(weights_filename)
 
     env = gym.make(args["env_name"])
     env = Monitor(env, monitor_path, resume=True, uid=args["run_id"] + "_test")

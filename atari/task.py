@@ -20,6 +20,11 @@ if __name__ == "__main__":
         required=True
     )
     parser.add_argument(
+        '--mode',
+        type=str,
+        default="Train"
+    )
+    parser.add_argument(
         "--learning_rate",
         type=float,
         default=0.0000625
