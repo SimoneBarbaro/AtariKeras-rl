@@ -1,6 +1,6 @@
 import argparse
 import os
-import model
+from . import model
 
 if __name__ == "__main__":
     """
