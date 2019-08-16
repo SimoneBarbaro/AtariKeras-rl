@@ -1,5 +1,5 @@
 from keras.models import Model
-from keras.layers import Input, Dense, Flatten, Convolution2D
+from keras.layers import Input, Dense, Flatten, Convolution2D, Permute
 from keras.initializers import VarianceScaling
 from keras.optimizers import Adam
 from rl.agents.dqn import DQNAgent
@@ -18,7 +18,7 @@ from callbacks import MyTrainLogger, ReloadModelIntervalCheckpoint
 class KerasModelBuilder:
 
     def __init__(self, input_shape, input_window_length, action_number, hidden_layer_size, random_seed=123):
-        self.input_shape = input_shape + (input_window_length,)
+        self.input_shape = (input_window_length,) + input_shape
         self.action_number = action_number
         self.hidden_layer_size = hidden_layer_size
         self.random_seed = random_seed
@@ -29,9 +29,9 @@ class KerasModelBuilder:
         """
         Model structure from: https://github.com/fg91/Deep-Q-Learning
         """
+        x = Permute((2, 3, 1))(input_layer)
         x = Convolution2D(32, (8, 8), strides=4, padding="valid", activation="relu",
-                          kernel_initializer=VarianceScaling(scale=2.0, seed=self.random_seed),
-                          use_bias=False)(input_layer)
+                          kernel_initializer=VarianceScaling(scale=2.0, seed=self.random_seed), use_bias=False)(x)
         x = Convolution2D(64, (4, 4), strides=2, padding="valid", activation="relu",
                           kernel_initializer=VarianceScaling(scale=2.0, seed=self.random_seed), use_bias=False)(x)
         x = Convolution2D(64, (3, 3), strides=1, padding="valid", activation="relu",
