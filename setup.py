@@ -81,7 +81,7 @@ class CustomCommands(setuptools.Command):
 #####
 
 REQUIRED_PACKAGES = [
-    'keras', 'keras-rl'
+    'keras', 'keras-rl', 'gym[atari]'
 ]
 
 setup(
