@@ -10,9 +10,9 @@ import numpy as np
 import gym
 from gym.wrappers.monitor import Monitor
 
-from .preprocessing import AtariProcessor
-from .policy import CheckpointAnnealedPolicy
-from .callbacks import MyTrainLogger, ReloadModelIntervalCheckpoint
+from preprocessing import AtariProcessor
+from policy import CheckpointAnnealedPolicy
+from callbacks import MyTrainLogger, ReloadModelIntervalCheckpoint
 
 
 class KerasModelBuilder:
