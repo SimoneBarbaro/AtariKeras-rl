@@ -1,4 +1,0 @@
-keras
-keras-rl
-gym[atari]
-tensorflow-gpu
