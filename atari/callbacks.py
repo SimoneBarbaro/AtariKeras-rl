@@ -2,10 +2,18 @@ import sys
 import timeit
 import numpy as np
 from rl.callbacks import Callback, ModelIntervalCheckpoint
+from tensorflow.python.lib.io import file_io
+import os
+
+
+def copy_file_to_gcs(job_dir, file_path):
+    with file_io.FileIO(file_path, mode='rb') as input_f:
+        with file_io.FileIO(os.path.join(job_dir, file_path), mode='w+') as output_f:
+            output_f.write(input_f.read())
 
 
 class MyTrainLogger(Callback):
-    def __init__(self, interval, training_steps, starting_step=0, log_filename=None):
+    def __init__(self, interval, training_steps, starting_step=0, log_filename=None, job_dir=None):
         super(MyTrainLogger, self).__init__()
         self.interval = interval
         self.step = starting_step
@@ -13,6 +21,7 @@ class MyTrainLogger(Callback):
         self.episode_step = 0
         self.episode_number = 0
         self.log_filename = log_filename
+        self.job_dir = job_dir
         self.reset()
 
     def reset(self):
@@ -34,8 +43,12 @@ class MyTrainLogger(Callback):
         if self.step % self.interval == 0:
             if len(self.episode_rewards) > 0:
                 print('\n{} episodes - reward statistics: {:.3f} [{:.3f}, {:.3f}]\n'.format(len(self.episode_rewards), np.mean(self.episode_rewards), np.min(self.episode_rewards), np.max(self.episode_rewards)))
-                with open(self.log_filename, "a") as f:
-                    f.write("step: {}, [last {} episodes reward statistics: {:.3f} [{:.3f}, {:.3f}]]\n".format(self.step, len(self.episode_rewards), np.mean(self.episode_rewards), np.min(self.episode_rewards), np.max(self.episode_rewards)))
+                if self.job_dir is None:
+                    with open(self.log_filename, "a") as f:
+                        f.write("step: {}, [last {} episodes reward statistics: {:.3f} [{:.3f}, {:.3f}]]\n".format(self.step, len(self.episode_rewards), np.mean(self.episode_rewards), np.min(self.episode_rewards), np.max(self.episode_rewards)))
+                else:
+                    with file_io.FileIO(os.path.join(self.job_dir, self.log_filename), mode='w+') as f:
+                        f.write("step: {}, [last {} episodes reward statistics: {:.3f} [{:.3f}, {:.3f}]]\n".format(self.step, len(self.episode_rewards), np.mean(self.episode_rewards), np.min(self.episode_rewards), np.max(self.episode_rewards)))
             self.reset()
 
     def on_step_end(self, step, logs):
@@ -52,10 +65,11 @@ class MyTrainLogger(Callback):
 
 
 class ReloadModelIntervalCheckpoint(ModelIntervalCheckpoint):
-    def __init__(self, checkpoint_path, step_path, interval, starting_step=0, verbose=0):
+    def __init__(self, checkpoint_path, step_path, interval, job_dir="", starting_step=0, verbose=0):
         super(ReloadModelIntervalCheckpoint, self).__init__(checkpoint_path, interval, verbose)
         self.total_steps = starting_step
         self.step_path = step_path
+        self.job_dir = job_dir
 
     def on_step_end(self, step, logs={}):
         super(ReloadModelIntervalCheckpoint, self).on_step_end(step, logs)
@@ -63,3 +77,6 @@ class ReloadModelIntervalCheckpoint(ModelIntervalCheckpoint):
             return
         with open(self.step_path, 'w') as f:
             f.write('{}'.format(self.total_steps))
+        if self.job_dir.startswith('gs://'):
+            copy_file_to_gcs(self.job_dir, self.step_path)
+            copy_file_to_gcs(self.job_dir, self.filepath)

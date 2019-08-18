@@ -20,6 +20,10 @@ if __name__ == "__main__":
         required=True
     )
     parser.add_argument(
+        "--job_dir",
+        default=None
+    )
+    parser.add_argument(
         '--mode',
         type=str,
         default="Train"
