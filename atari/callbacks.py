@@ -47,7 +47,7 @@ class MyTrainLogger(Callback):
                     with open(self.log_filename, "a") as f:
                         f.write("step: {}, [last {} episodes reward statistics: {:.3f} [{:.3f}, {:.3f}]]\n".format(self.step, len(self.episode_rewards), np.mean(self.episode_rewards), np.min(self.episode_rewards), np.max(self.episode_rewards)))
                 else:
-                    with file_io.FileIO(os.path.join(self.job_dir, self.log_filename), mode='w+') as f:
+                    with file_io.FileIO(os.path.join(self.job_dir, self.log_filename), mode='a') as f:
                         f.write("step: {}, [last {} episodes reward statistics: {:.3f} [{:.3f}, {:.3f}]]\n".format(self.step, len(self.episode_rewards), np.mean(self.episode_rewards), np.min(self.episode_rewards), np.max(self.episode_rewards)))
             self.reset()
 
