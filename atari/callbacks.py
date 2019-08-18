@@ -25,11 +25,11 @@ class MyTrainLogger(Callback):
         self.monitor_dir = monitor_dir
         self.monitor_interval = monitor_interval
 
+        self.job_dir = job_dir
+
         if starting_step == 0:
             with file_io.FileIO(os.path.join(self.job_dir, self.log_filename), mode='w') as f:
                 f.write("")
-        
-        self.job_dir = job_dir
         self.reset()
 
     def reset(self):
