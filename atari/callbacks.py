@@ -65,8 +65,9 @@ class MyTrainLogger(Callback):
         sys.stdout.flush()
         if self.monitor_dir is not None and self.episode_number % self.monitor_interval == 0:
             for f in os.listdir(self.monitor_dir):
+                file_path = os.path.join(self.monitor_dir, f)
                 if f.endswith(".mp4"):
-                    file_io.copy(f, os.path.join(self.job_dir, f), overwrite=True)
+                    file_io.copy(file_path, os.path.join(self.job_dir, file_path), overwrite=True)
         self.episode_number += 1
         self.episode_step = 0
 
