@@ -13,7 +13,8 @@ def copy_file_to_gcs(job_dir, file_path):
 
 
 class MyTrainLogger(Callback):
-    def __init__(self, interval, training_steps, starting_step=0, log_filename=None, job_dir=None):
+    def __init__(self, interval, training_steps, starting_step=0, log_filename=None,
+                 monitor_dir=None, monitor_interval=1, job_dir=None):
         super(MyTrainLogger, self).__init__()
         self.interval = interval
         self.step = starting_step
@@ -21,6 +22,8 @@ class MyTrainLogger(Callback):
         self.episode_step = 0
         self.episode_number = 0
         self.log_filename = log_filename
+        self.monitor_dir = monitor_dir
+        self.monitor_interval = monitor_interval
         self.job_dir = job_dir
         self.reset()
 
@@ -60,6 +63,10 @@ class MyTrainLogger(Callback):
         self.episode_rewards.append(logs['episode_reward'])
         print("\r{}/{} steps, episode {} ({} steps), reward: {}".format(self.step, self.training_steps, self.episode_number, self.episode_step, logs['episode_reward']), end="")
         sys.stdout.flush()
+        if self.monitor_dir is not None and self.episode_number % self.monitor_interval == 0:
+            for f in os.listdir(self.monitor_dir):
+                if f.endswith(".mp4"):
+                    file_io.copy(f, os.path.join(self.job_dir, f), overwrite=True)
         self.episode_number += 1
         self.episode_step = 0
 

@@ -93,7 +93,8 @@ def train_and_evaluate(args, monitor_path, checkpoint_step_filename,
                                                starting_step=starting_step,
                                                job_dir=args["job_dir"]),
                  MyTrainLogger(interval=args["checkpoint_frequency"], training_steps=args["training_steps"],
-                               starting_step=starting_step, job_dir=args["job_dir"], log_filename=log_filename)]
+                               starting_step=starting_step, job_dir=args["job_dir"], log_filename=log_filename,
+                               monitor_dir=monitor_path, monitor_interval=args["record_video_every"])]
 
     if args["mode"] == "Train":
         dqn.fit(env, callbacks=callbacks, verbose=0,
