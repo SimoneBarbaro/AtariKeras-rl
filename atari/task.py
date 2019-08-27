@@ -1,6 +1,7 @@
 import argparse
 import os
-from . import model
+from . import training
+import glob
 
 if __name__ == "__main__":
     """
@@ -149,11 +150,22 @@ if __name__ == "__main__":
     os.makedirs(checkpoint_path, exist_ok=True)
     os.makedirs(monitor_path, exist_ok=True)
 
+    lastNum = -1
+    if glob.glob(os.path.join(monitor_path, "video*")):
+        lastNum = max(glob.glob(monitor_path + "/video*.mp4"), key=os.path.getctime).split(".")[1]
+    for filename in os.listdir(monitor_path):
+        if filename.endswith(".mp4"):
+            src = os.path.join(monitor_path, filename)
+            print(filename)
+            _, _, _, _, name, ext = filename.split(".")
+            dst = os.path.join(monitor_path, "video." + str(lastNum + 1) + "." + name + "." + ext)
+            os.rename(src, dst)
+
     checkpoint_weights_base = os.path.join(checkpoint_path, 'checkpoint_weights')
     checkpoint_weights_filename = checkpoint_weights_base + ".h5f"
     checkpoint_step_filename = checkpoint_weights_base + "_step.txt"
     log_filename = os.path.join(output_dir, "log.txt")
     weights_filename = os.path.join(checkpoint_path, 'final_weights.h5f')
 
-    model.train_and_evaluate(args, monitor_path, checkpoint_step_filename,
-                             checkpoint_weights_filename, weights_filename, log_filename)
+    training.train_and_evaluate(args, monitor_path, checkpoint_step_filename,
+                                checkpoint_weights_filename, weights_filename, log_filename)
