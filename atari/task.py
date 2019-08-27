@@ -152,11 +152,10 @@ if __name__ == "__main__":
 
     lastNum = -1
     if glob.glob(os.path.join(monitor_path, "video*")):
-        lastNum = max(glob.glob(monitor_path + "/video*.mp4"), key=os.path.getctime).split(".")[1]
+        lastNum = int(max(glob.glob(os.path.join(monitor_path, "video*")), key=os.path.getctime).split(".")[1])
     for filename in os.listdir(monitor_path):
-        if filename.endswith(".mp4"):
+        if filename.startswith("open") and filename.endswith(".mp4"):
             src = os.path.join(monitor_path, filename)
-            print(filename)
             _, _, _, _, name, ext = filename.split(".")
             dst = os.path.join(monitor_path, "video." + str(lastNum + 1) + "." + name + "." + ext)
             os.rename(src, dst)
